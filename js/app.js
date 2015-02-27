@@ -20,7 +20,8 @@ var maki="";
 var showStyle=true;
 var selectorEnabled=false;
 var drawnItems ;
-var locationFilter ;
+var locationFilter;
+var selectedLayer;
 
 // function removeSelector(){
 //     areaSelect.remove();
@@ -56,7 +57,9 @@ function addSelector2(){
     locationFilter.on("change", function (e) {
         // Do something when the bounds change.
         // Bounds are available in `e.bounds`.
-        console.log(e.bounds);
+        // console.log(e.bounds);
+        select_features(e.bounds);
+
     });
     //can use in future
     //locationfilter.getBounds().contains(<Bounds> or <Point>)
@@ -194,6 +197,9 @@ function init(){
                                         mouseout:resetHighlight
                                     });
                                 });
+        if(selectorEnabled){
+            select_features(locationFilter.getBounds());
+        }
 
     });
     map.on('draw:deleted', function (e) {
@@ -280,49 +286,49 @@ function bindPopup(l) {
     if (!Object.keys(properties).length) properties = { '': '' };
 
     
-/*//This Block will add default style properties to the properties table
-    if (l.feature && l.feature.geometry && writable) {
-        //This Block will add default style properties to the properties table
-        if (l.feature.geometry.type === 'Point') {
-            if (!('marker-color' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="marker-color"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="color" value="#7E7E7E"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
+    /*//This Block will add default style properties to the properties table
+        if (l.feature && l.feature.geometry && writable) {
+            //This Block will add default style properties to the properties table
+            if (l.feature.geometry.type === 'Point') {
+                if (!('marker-color' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="marker-color"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="color" value="#7E7E7E"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
+                }
+                if (!('marker-size' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="marker-size"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="text" list="marker-size" value="medium"' + (!writable ? ' readonly' : '') + ' /><datalist id="marker-size"><option value="small"><option value="medium"><option value="large"></datalist></td></tr>';
+                }
+                if (!('marker-symbol' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="marker-symbol"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="text" list="marker-symbol" value=""' + (!writable ? ' readonly' : '') + ' /><datalist id="marker-symbol">' + maki + '</datalist></td></tr>';
+                }
             }
-            if (!('marker-size' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="marker-size"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="text" list="marker-size" value="medium"' + (!writable ? ' readonly' : '') + ' /><datalist id="marker-size"><option value="small"><option value="medium"><option value="large"></datalist></td></tr>';
+            if (l.feature.geometry.type === 'LineString' || l.feature.geometry.type === 'Polygon') {
+                if (!('stroke' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="stroke"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="color" value="#555555"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
+                }
+                if (!('stroke-width' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="stroke-width"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="number" min="0" step="0.1" value="2"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
+                }
+                if (!('stroke-opacity' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="stroke-opacity"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="number" min="0" max="1" step="0.1" value="1"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
+                }
             }
-            if (!('marker-symbol' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="marker-symbol"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="text" list="marker-symbol" value=""' + (!writable ? ' readonly' : '') + ' /><datalist id="marker-symbol">' + maki + '</datalist></td></tr>';
+            if (l.feature.geometry.type === 'Polygon') {
+                if (!('fill' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="fill"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="color" value="#555555"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
+                }
+                if (!('fill-opacity' in properties)) {
+                    table += '<tr class="style-row"><th><input type="text" value="fill-opacity"' + (!writable ? ' readonly' : '') + ' /></th>' +
+                        '<td><input type="number" min="0" max="1" step="0.1" value="0.5"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
+                }
             }
         }
-        if (l.feature.geometry.type === 'LineString' || l.feature.geometry.type === 'Polygon') {
-            if (!('stroke' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="stroke"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="color" value="#555555"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
-            }
-            if (!('stroke-width' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="stroke-width"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="number" min="0" step="0.1" value="2"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
-            }
-            if (!('stroke-opacity' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="stroke-opacity"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="number" min="0" max="1" step="0.1" value="1"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
-            }
-        }
-        if (l.feature.geometry.type === 'Polygon') {
-            if (!('fill' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="fill"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="color" value="#555555"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
-            }
-            if (!('fill-opacity' in properties)) {
-                table += '<tr class="style-row"><th><input type="text" value="fill-opacity"' + (!writable ? ' readonly' : '') + ' /></th>' +
-                    '<td><input type="number" min="0" max="1" step="0.1" value="0.5"' + (!writable ? ' readonly' : '') + ' /></td></tr>';
-            }
-        }
-    }
-*/
+    */
     for (var key in properties) {
         if ((key == 'marker-color' || key == 'stroke' || key == 'fill') && writable) {
             table += '<tr class="style-row"><th><input type="text" value="' + key + '"' + (!writable ? ' readonly' : '') + ' /></th>' +
@@ -459,18 +465,80 @@ function handleFileSelect(evt) {
 
 function highlightFeature(e) {
     var layer = e.target;
-
-    layer.setStyle({
-        weight: 5,
-        color: '#FFFF00',
-        dashArray: '',
-        fillOpacity: 0.5
-    });
-
-    if (!L.Browser.ie && !L.Browser.opera) {
-        layer.bringToFront();
+    // console.log(e.toGeoJSON());
+    if(e.target.toGeoJSON().geometry.type!="Point")
+    {
+   
+        layer.setStyle({
+            weight: 5,
+            color: '#FFFF00',
+            dashArray: '',
+            fillOpacity: 0.5
+        });
+        if (!L.Browser.ie && !L.Browser.opera) {
+            layer.bringToFront();
+        }
     }
 }
 function resetHighlight(e) {
     drawnItems.resetStyle(e.target);
+    if(selectorEnabled){
+        select_features(locationFilter.getBounds());
+        // console.log();
+    }
+}
+
+function highlightFeatureLayer(layer) {
+    // console.log(layer)
+    if(layer.toGeoJSON().geometry.type!="Point")
+    {
+
+        layer.setStyle({
+            weight: 5,
+            color: '#FFFF00',
+            dashArray: '',
+            fillOpacity: 0.5
+        });
+        if (!L.Browser.ie && !L.Browser.opera) {
+            layer.bringToFront();
+        }
+    }
+}
+function resetHighlightLayer(layer) {
+    drawnItems.resetStyle(layer);
+}
+
+function select_features(selector_box){
+    if(selector_box==null){
+        return;
+    }
+    selectedLayer=L.geoJson(null);
+
+    drawnItems.eachLayer(function checkBBox(l) {
+
+                                    var objectCoords;//can be bounds or latlng depending on polygon/line or marker
+                                    var isMarker=false;
+                                    if(l.toGeoJSON().geometry.type!="Point"){
+                                        objectCoords=l.getBounds();
+                                    }
+                                    else{
+                                        objectCoords=l.getLatLng();
+                                        isMarker=true;
+                                    }
+                                    if(!isMarker){resetHighlightLayer(l);}
+
+                                    if(selector_box.contains(objectCoords) || (!isMarker && selector_box.intersects(objectCoords))){
+                                        selectedLayer.addData(l.toGeoJSON());
+
+                                        if(!isMarker){highlightFeatureLayer(l);}
+                                    }
+                                });
+
+    console.log(JSON.stringify(selector_box._southWest.lat));
+    $('#bbox-sw').text("("+(parseFloat(JSON.stringify(selector_box._southWest.lat))).toFixed(5)+", "+(parseFloat(JSON.stringify(selector_box._southWest.lng))).toFixed(5)+")");
+    $('#bbox-ne').text("("+(parseFloat(JSON.stringify(selector_box._northEast.lat))).toFixed(5)+", "+(parseFloat(JSON.stringify(selector_box._northEast.lng))).toFixed(5)+")");
+
+    $('#selector-geojson').val(JSON.stringify(selectedLayer.toGeoJSON(),null,2));
+
+
 }

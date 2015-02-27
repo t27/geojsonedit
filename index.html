@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello Map</title>
+        <title>GeoJson Editor - Tarang</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- Scripts go here -->
                                     <!-- Latest leaflet JS -->
@@ -33,11 +33,15 @@
         <style>
 
 
-        html,body, #map{
+        html,body{
            height:100%;
            width:100%;
         }
-        #mapdiv, #buttonbox{
+        #map{
+                   height:90%;
+                   width:100%;
+                }
+        #mapdiv{
             height:100%;
 
             margin:0px;
@@ -83,6 +87,7 @@
         <div id="mapdiv" class="col-md-6">
             <h4>Map</h4>
             <div id='map' ></div>
+            <div><h4>BBoxCoords (Lat,Lng)</h4><label>SW:<label id="bbox-sw">(Latitude, Longitude)</label> NE:<label id="bbox-ne">(Latitude, Longitude) </label></label></div>
         </div>
         <div class="col-md-1" id="buttonbox">
             <h4>Options</h4>
@@ -102,9 +107,12 @@
             </span>
             <output id="list"></output>
         </div>
+
         <div class="col-md-5" style="height:100%">
         <h4>GeoJSON Data</h4>
-            <textarea class="form-control" id="my-geojson" style="height:100%"></textarea>
+            <textarea class="form-control" id="my-geojson" style="height:60%"></textarea>
+            <h4 >Selected Data</h4>
+            <textarea class="form-control" id="selector-geojson" style="height:30%"></textarea>
         </div>
     </div>
     </div>
