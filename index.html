@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello Map</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Scripts go here -->
+                                    <!-- Latest leaflet JS -->
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+                                    <!-- BootStrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+        <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script>
+<!--         <script src="http://heyman.github.io/leaflet-areaselect/src/leaflet-areaselect.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+        <!-- <script src="./libs/leaflet.filelayer.js"></script>
+        <script src="./libs/togeojson/togeojson.js"></script> -->
+        <script src="./libs/leaflet-geodesy.js"></script>
+        <script src="./libs/selector/locationfilter.js"></script>
+
+        <script src="./libs/Edit.Poly.Drag.js"></script>
+        <script src="./js/app.js"></script>
+
+        <!-- CSS Styles go here -->
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+        <link rel="stylesheet" type="text/css" href="./css/custom.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.draw/leaflet.draw.css"  />
+<!--         <link rel="stylesheet" href="http://heyman.github.io/leaflet-areaselect/src/leaflet-areaselect.css"> -->
+        <link rel="stylesheet" type="text/css" href="./libs/selector/locationfilter.css">
+
+        <style>
+
+
+        html,body, #map{
+           height:100%;
+           width:100%;
+        }
+        #mapdiv, #buttonbox{
+            height:100%;
+
+            margin:0px;
+        }
+        div.row{
+
+            height:90%;
+        }
+        div.container{
+            height:100%;
+            width:100%;
+            margin:1px;
+        }
+        
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+
+        </style>
+
+        
+    </head>
+    <body onload='init()'>
+    <div class="container">
+    <div class="row">
+
+        <div id="mapdiv" class="col-md-6">
+            <h4>Map</h4>
+            <div id='map' ></div>
+        </div>
+        <div class="col-md-1" id="buttonbox">
+            <h4>Options</h4>
+
+            <button type="button" class="btn btn-primary" data-toggle="button" onClick="toggleSelector2()">Enable Selector</button>
+
+         <!--    <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-primary">
+                <input type="checkbox" autocomplete="off" onchange="toggleSelector2()"> Enable Selector
+              </label>
+            </div>
+ -->
+            <!-- <button type="button" class="btn btn-default" onClick="addSelector2()">AddSelector2</button> -->
+            <!-- <button type="button" class="btn btn-default" onClick="getGeoJSONFile()">Load GeoJson</button> -->
+            <span class="btn btn-primary btn-file">
+                Load GeoJSON <input type="file" id="files" name="files[]" multiple />
+            </span>
+            <output id="list"></output>
+        </div>
+        <div class="col-md-5" style="height:100%">
+        <h4>GeoJSON Data</h4>
+            <textarea class="form-control" id="my-geojson" style="height:100%"></textarea>
+        </div>
+    </div>
+    </div>
+
+
+
+    <script>
+
+
+      document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    </script>
+
+    </body>
+</html>
