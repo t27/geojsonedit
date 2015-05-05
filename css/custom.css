@@ -168,7 +168,7 @@ table tbody tr td input {
     text-align:left;
     font:inherit;
     padding:5px;
-    width:150px;
+    width:200px;
     box-sizing:border-box;
     margin:0;
 }
@@ -734,7 +734,7 @@ input[type=text] {
  .marker-properties,
  .metadata {
      border-collapse:collapse;
-     font-size:11px;
+     font-size:15px;
      width:100%;
      overflow:auto;
      border-bottom:1px solid #ccc;
@@ -810,6 +810,11 @@ input[type=text] {
  .tabs-ui {
      position:relative;
      width: 250px;
+ }
+
+ .tabs-ui2 {
+     position:relative;
+     width: 100%;
  }
 
  .tab .tab-toggle {

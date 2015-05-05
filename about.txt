@@ -1,0 +1,4 @@
+simple geojson viewer, can edit geojson and add/update features by clicking on them, shows the geojson features on a tabbed view on the other half of the page
+
+adding the option of viewing different layers by dynamically changing the Leaflet Draw control layers.
+Major changes in the structuring as earlier all features were on only one layer,(drawnItems)

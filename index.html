@@ -4,6 +4,30 @@
         <title>GeoJson Editor - Tarang</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- Scripts go here -->
+        <script>
+        function getQueryParams(qs) {
+            qs = qs.split("+").join(" ");
+
+            var params = {}, tokens,
+                re = /[?&]?([^=]+)=([^&]*)/g;
+
+            while (tokens = re.exec(qs)) {
+                params[decodeURIComponent(tokens[1])]
+                    = decodeURIComponent(tokens[2]);
+            }
+
+            return params;
+        }
+
+
+        var query = getQueryParams(document.location.search);
+        
+        if((query.render==="canvas"))
+        {
+            L_PREFER_CANVAS = true; // experimental
+        }
+                //http://leafletjs.com/reference.html#path-canvas
+        </script>
                                     <!-- Latest leaflet JS -->
         <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -19,6 +43,9 @@
         <script src="./libs/selector/locationfilter.js"></script>
 
         <script src="./libs/Edit.Poly.Drag.js"></script>
+        
+        <script src="./js/OSMBuildings-Leaflet.js"></script>
+
         <script src="./js/app.js"></script>
 
         <!-- CSS Styles go here -->
@@ -55,7 +82,7 @@
             width:100%;
             margin:1px;
         }
-        
+
         .btn-file {
             position: relative;
             overflow: hidden;
@@ -75,6 +102,9 @@
             cursor: inherit;
             display: block;
         }
+        textarea.form-control {
+          height: 100%;
+        }
 
         </style>
 
@@ -84,35 +114,90 @@
     <div class="container">
     <div class="row">
 
-        <div id="mapdiv" class="col-md-6">
+        <div id="mapdiv" class="col-md-8">
             <h4>Map</h4>
             <div id='map' ></div>
-            <div><h4>BBoxCoords (Lat,Lng)</h4><label>SW:<label id="bbox-sw">(Latitude, Longitude)</label> NE:<label id="bbox-ne">(Latitude, Longitude) </label></label></div>
-        </div>
-        <div class="col-md-1" id="buttonbox">
-            <h4>Options</h4>
+            <div id="bboxdiv" ><h4 style="display:inline-block;">BBoxCoords (Lat,Lng) -</h4><label> SW:<label id="bbox-sw">(Latitude, Longitude)</label> NE:<label id="bbox-ne">(Latitude, Longitude) </label></label></div>
+            <p></p>
+            <div  id="buttonbox" >
+              <!--   <h4>&nbsp;</h4> -->
+                <span class="btn btn-primary btn-file">
+                    Load GeoJSON <input type="file" id="files" name="files[]" multiple />
+                </span>
+                <button type="button" class="btn btn-primary" data-toggle="button" onClick="toggleSelector2()">Enable/Disable Selector</button>
+                <!-- <br>
+                <label>
+                      <input type="checkbox" id="filezoom" checked>Zoom to File
+                </label> -->
+                <div style="float:right;">
 
-            <button type="button" class="btn btn-primary" data-toggle="button" onClick="toggleSelector2()">Enable Selector</button>
+                <label>Draw/Edit Layer</label>
+                <div style="display:inline-block;">
+                <select class="form-control" id="layer-select">
 
-         <!--    <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-primary">
-                <input type="checkbox" autocomplete="off" onchange="toggleSelector2()"> Enable Selector
-              </label>
+                </select>
+
+                </div>
+                <button type="button" class="btn btn-primary" id="deleteLayer" onClick="deleteCurrentLayer()" disabled>Delete Current Layer</button>
+
+                </div>
+
             </div>
- -->
-            <!-- <button type="button" class="btn btn-default" onClick="addSelector2()">AddSelector2</button> -->
-            <!-- <button type="button" class="btn btn-default" onClick="getGeoJSONFile()">Load GeoJson</button> -->
-            <span class="btn btn-primary btn-file">
-                Load GeoJSON <input type="file" id="files" name="files[]" multiple />
-            </span>
-            <output id="list"></output>
         </div>
 
-        <div class="col-md-5" style="height:100%">
-        <h4>GeoJSON Data</h4>
-            <textarea class="form-control" id="my-geojson" style="height:60%"></textarea>
-            <h4 >Selected Data</h4>
-            <textarea class="form-control" id="selector-geojson" style="height:30%"></textarea>
+
+        <div class="col-md-4" style="height:100%">
+            
+
+
+            <div role="tabpanel" style="height:50%">
+              <!-- Nav tabs -->
+              <div style="display:inline;">
+              <h4 >GeoJSON Data</h4>
+              <!-- <button type="button" class="btn btn-primary" id="saveMainGeoJson" onClick="saveMainGeoJson" style="float:right;">Save</button> -->
+              </div>
+              <ul class="nav nav-tabs" role="tablist" id="geojson-tab-menu" >
+                <li role="presentation" class="active"><a href="#alllayers" aria-controls="alllayers" role="tab" data-toggle="tab">All Layers</a></li>
+                <li role="presentation" class="dropdown" id="layerDropdownMenu">
+                        <a href="#" id="layerDropdown" class="dropdown-toggle" data-toggle="dropdown" aria-controls="layerDropdown-contents" aria-expanded="true" >Layer wise view<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="layerDropdown" id="layerDropdown-list">
+                         
+                        </ul>
+                      </li>
+                </ul>
+
+              <!-- Tab panes -->
+              <div class="tab-content" id="geojson-tab-panes" style="height:100%">
+                <div role="tabpanel" class="tab-pane active" id="alllayers"  style="height:90%">
+                <textarea class="form-control" id="my-geojson" style="height:100%" ></textarea>
+                </div>
+                
+
+              </div>
+
+            </div>
+            <hr/>
+            <div role="tabpanel" style="height:40%">
+
+              <!-- Nav tabs -->
+              <ul class="nav nav-tabs" role="tablist" id="tab-menu" >
+                <li role="presentation" class="active"><a href="#selecteddata" aria-controls="selecteddata" role="tab" data-toggle="tab">Selection Data</a></li>
+                <li role="presentation"><a href="#tabledata" aria-controls="tabledata" role="tab" data-toggle="tab">Feature Data</a></li>
+
+              </ul>
+
+              <!-- Tab panes -->
+              <div class="tab-content" id="tab-panes" style="height:100%">
+                
+                <div role="tabpanel" class="tab-pane active" id="selecteddata"  style="height:100%">
+                    <textarea class="form-control" id="selector-geojson" style="height:100%"  ></textarea>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="tabledata"></div>
+              </div>
+
+            </div>
+
         </div>
     </div>
     </div>
